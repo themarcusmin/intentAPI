@@ -12,9 +12,18 @@ services:
     build:
       context: .
       target: final
+      dockerfile: Dockerfile
+    container_name: server
     ports:
       - 8080:8080
-
+    entrypoint: ["dotnet", "IntentAPI.dll"]
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+#      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+#      - ASPNETCORE_HTTPS_PORT=8081
+    volumes:
+      - .:/code
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
 # start the database before your application. The `db-data` volume persists the
@@ -47,4 +56,24 @@ services:
 # secrets:
 #   db-password:
 #     file: db/password.txt
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PW}
+      - POSTGRES_DB=${POSTGRES_DB} #optional (specify default database instead of $POSTGRES_DB)
+    ports:
+      - "5432:5432"
+    restart: always
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_MAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PW}
+    ports:
+      - "5050:80"
+    restart: always
 
