@@ -17,6 +17,7 @@ namespace IntentAPI.Migrations
                 {
                     UserId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Auth0UserId = table.Column<string>(type: "text", nullable: false),
                     GivenName = table.Column<string>(type: "text", nullable: false),
                     FamilyName = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false)
@@ -25,6 +26,12 @@ namespace IntentAPI.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Auth0UserId",
+                table: "Users",
+                column: "Auth0UserId",
+                unique: true);
         }
 
         /// <inheritdoc />

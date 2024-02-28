@@ -22,7 +22,7 @@ namespace IntentAPI.Controllers
                     Message = "User successfully registered!"
                 });
             }
-            catch (Exception e)
+            catch (DbUpdateException e)
             {
                 Console.WriteLine("Catch clause caught : {0} \n", e);
                 return Conflict(new

@@ -29,6 +29,10 @@ namespace IntentAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
 
+                    b.Property<string>("Auth0UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -43,7 +47,7 @@ namespace IntentAPI.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("Email")
+                    b.HasIndex("Auth0UserId")
                         .IsUnique();
 
                     b.ToTable("Users");
