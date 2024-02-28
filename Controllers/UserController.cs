@@ -22,8 +22,9 @@ namespace IntentAPI.Controllers
                     Message = "User successfully registered!"
                 });
             }
-            catch (DbUpdateException)
+            catch (Exception e)
             {
+                Console.WriteLine("Catch clause caught : {0} \n", e);
                 return Conflict(new
                 {
                     Message = "Email already exists!"

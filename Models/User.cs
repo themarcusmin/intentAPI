@@ -2,10 +2,11 @@
 
 namespace IntentAPI.Models
 {
-    [Index(nameof(Email), IsUnique = true)]
+    [Index(nameof(Auth0UserId), IsUnique = true)]
     public class User
     {
         public int UserId { get; set; }
+        public string Auth0UserId { get; set; }
         public string GivenName { get; set; }
         public string FamilyName { get; set; }
         
