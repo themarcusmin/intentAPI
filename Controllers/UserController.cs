@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IntentAPI.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class UserController : ControllerBase
     {
         AppDbContext dbContext = new AppDbContext();

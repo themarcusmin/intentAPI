@@ -5,7 +5,11 @@ namespace IntentAPI.Models;
 public class AppDbContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseNpgsql(@"Host=postgres;Username=root;Password=root;Database=intent_db");
+            => options.UseNpgsql(@"Host=host.docker.internal;Username=root;Password=root;Database=intent_db;Port=5432");
 
     public DbSet<User> Users { get; set; }
+
+    public DbSet<Event> Events { get; set; }
+
+    public DbSet<Recurring> Recurrings { get; set; }
 }
