@@ -1,4 +1,13 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using IntentAPI.Diagnostics;
+using System.Text;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using FirebaseAdmin.Auth;
+using IntentAPI.Abstractions;
+
+DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 // Logging
@@ -16,6 +25,41 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
         });
 });
+
+// Firebase
+string projectId = DotNetEnv.Env.GetString("FIREBASE_PROJECT_ID");
+string serviceAccountId = DotNetEnv.Env.GetString("FIREBASE_SERVICE_ACCOUNT_ID");
+string privateKey = DotNetEnv.Env.GetString("FIREBASE_PRIVATE_KEY");
+
+var firebaseApp = FirebaseApp.Create(new AppOptions()
+{
+    //Credential = GoogleCredential.GetApplicationDefault(),
+    Credential = GoogleCredential.FromFile("./service-account-file.json"),
+    ServiceAccountId = serviceAccountId
+});
+
+var firebaseAuth = FirebaseAuth.GetAuth(firebaseApp);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.Authority = $"https://securetoken.google.com/{projectId}";
+    options.UseSecurityTokenValidators = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = $"https://securetoken.google.com/{projectId}",
+        ValidateAudience = true,
+        ValidAudience = projectId,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(privateKey)),
+        ValidateLifetime = true
+    };
+});
+
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -41,6 +85,8 @@ app.UseCors();
 app.UseExceptionHandler(_ => { });
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<JwtMiddleware>();
 
 app.UseAuthentication();
 
