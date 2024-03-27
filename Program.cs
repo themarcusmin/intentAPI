@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using IntentAPI.Diagnostics;
-using System.Text;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using FirebaseAdmin.Auth;
 using IntentAPI.Abstractions;
+using Microsoft.IdentityModel.Logging;
 
 DotNetEnv.Env.Load();
 
@@ -29,7 +29,6 @@ builder.Services.AddCors(options =>
 // Firebase
 string projectId = DotNetEnv.Env.GetString("FIREBASE_PROJECT_ID");
 string serviceAccountId = DotNetEnv.Env.GetString("FIREBASE_SERVICE_ACCOUNT_ID");
-string privateKey = DotNetEnv.Env.GetString("FIREBASE_PRIVATE_KEY");
 
 var firebaseApp = FirebaseApp.Create(new AppOptions()
 {
@@ -55,11 +54,9 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = $"https://securetoken.google.com/{projectId}",
         ValidateAudience = true,
         ValidAudience = projectId,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(privateKey)),
         ValidateLifetime = true
     };
 });
-
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -78,6 +75,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    IdentityModelEventSource.ShowPII = true;
 }
 
 app.UseCors();
