@@ -12,4 +12,12 @@ public class AppDbContext : DbContext
     public DbSet<Event> Events { get; set; }
 
     public DbSet<Recurring> Recurrings { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Recurring>().Property(e => e.RecurringMode)
+            .HasConversion(
+                v => v.ToString(),
+                v => (RecurringMode)Enum.Parse(typeof(RecurringMode), v));
+    }
 }

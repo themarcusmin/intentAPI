@@ -60,7 +60,7 @@ namespace IntentAPI.Migrations
                 {
                     RecurringId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RecurringMode = table.Column<int>(type: "integer", nullable: false),
+                    RecurringMode = table.Column<string>(type: "text", nullable: false),
                     EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EventId = table.Column<int>(type: "integer", nullable: false)
                 },

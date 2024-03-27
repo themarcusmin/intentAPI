@@ -77,8 +77,9 @@ namespace IntentAPI.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("RecurringMode")
-                        .HasColumnType("integer");
+                    b.Property<string>("RecurringMode")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("RecurringId");
 

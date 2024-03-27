@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IntentAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240323023743_init")]
+    [Migration("20240327161725_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -80,8 +80,9 @@ namespace IntentAPI.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("RecurringMode")
-                        .HasColumnType("integer");
+                    b.Property<string>("RecurringMode")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("RecurringId");
 
