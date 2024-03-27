@@ -32,6 +32,10 @@ namespace IntentAPI.Validators
                 .Must((createEventDTO, RepeatEndDate) => DateTime.Compare(createEventDTO.EventEndTime, (DateTime)RepeatEndDate!) < 0)
                 .When(createEventDTO => createEventDTO.RepeatEndDate != null)
                 .WithMessage("RepeatEndDate must be later than EventEndTime.");
+            RuleFor(createEventDTO => createEventDTO.RepeatEndDate)
+                .Null()
+                .When(createEventDTO => createEventDTO.RepeatMode == RecurringMode.never.ToString())
+                .WithMessage("RepeatEndDate is not required.");
         }
     }
 }
