@@ -14,14 +14,13 @@ namespace IntentAPI.Abstractions
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);
-            if (!token.IsNullOrEmpty())
+            var jwt = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);
+            if (!jwt.IsNullOrEmpty())
             {
                 try
                 {
-                    FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
+                    FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(jwt);
                     string uid = decodedToken.Uid;
-
                     context.Items["FirebaseUserId"] = uid;
                 }
                 catch (Exception)

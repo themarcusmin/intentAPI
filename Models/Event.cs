@@ -6,7 +6,6 @@ namespace IntentAPI.Models
     {
         public int EventId { get; set; }
 
-        [Required]
         public string Title { get; set; }
         public string? Description { get; set; }
 
