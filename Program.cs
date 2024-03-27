@@ -6,6 +6,7 @@ using Google.Apis.Auth.OAuth2;
 using FirebaseAdmin.Auth;
 using IntentAPI.Abstractions;
 using Microsoft.IdentityModel.Logging;
+using System.Text.Json.Serialization;
 
 DotNetEnv.Env.Load();
 
@@ -59,7 +60,8 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // Error handling
 builder.Services.AddExceptionHandler<ExceptionHandler>();

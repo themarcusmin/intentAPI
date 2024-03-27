@@ -1,9 +1,10 @@
 ﻿using FluentValidation.Results;
 using IntentAPI.DTO;
+using IntentAPI.Models;
 using IntentAPI.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Net.Mime;
 
 namespace IntentAPI.Controllers
 {
@@ -13,6 +14,9 @@ namespace IntentAPI.Controllers
     {
         [HttpPost("create")]
         [Authorize]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult CreateEvent([FromBody] CreateEventDTO createEventDTO)
         {
             CreateEventValidator validator = new CreateEventValidator();
@@ -25,38 +29,31 @@ namespace IntentAPI.Controllers
                     Message = result.Errors[0].ErrorMessage
                 });
             }
-            //
-            //CreateEventValidator validator = new CreateEventValidator();
-            //ValidationResult results = validator.Validate(createEventDTO);
-            return Ok(
-                new
+
+            var firebaseUserid = HttpContext.Items["FirebaseUserId"];
+            using (var context = new AppDbContext())
+            {
+                var user = context.Users.Single(u => u.FirebaseUserId == firebaseUserid.ToString());
+                var newEvent = new Event
                 {
-                    Message = "here"
-                });
-            //var firebaseUserid = HttpContext.Items["FirebaseUserId"];
-            //using (var context = new AppDbContext())
-            //{
-            //    //var user = context.Users.Single(u => u.Auth0UserId == JWTAuth0UserId);
-            //    var user = context.Users.Single(u => u.FirebaseUserId == firebaseUserid);
-            //    var newEvent = new Event
-            //    {
-            //        User = user,
-            //        Title = createEventDTO.Title,
-            //        Description = createEventDTO.description,
-            //        Location = createEventDTO.location,
-            //        StartTime = createEventDTO.eventStartTime,
-            //        EndTime = createEventDTO.eventEndTime,
-            //        IsRecurring = createEventDTO.repeatMode == RecurringMode.never ? false : true,
-            //        Recurring = createEventDTO.repeatMode == RecurringMode.never ? null : new Recurring
-            //        {
-            //            RecurringMode = createEventDTO.repeatMode,
-            //            EndDate = (DateTime)createEventDTO.repeatEndDate
-            //        }
-            //    };
-            //    user.Events.Add(newEvent);
-            //    context.SaveChanges();
-            //}
-            //return Ok();
+                    User = user,
+                    FirebaseUserId = firebaseUserid.ToString(),
+                    Title = createEventDTO.Title,
+                    Description = createEventDTO.Description,
+                    Location = createEventDTO.Location,
+                    StartTime = createEventDTO.EventStartTime,
+                    EndTime = createEventDTO.EventEndTime,
+                    IsRecurring = createEventDTO.RepeatMode == RecurringMode.never.ToString() ? false : true,
+                    Recurring = createEventDTO.RepeatMode == RecurringMode.never.ToString() ? null : new Recurring
+                    {
+                        RecurringMode = (RecurringMode)Enum.Parse(typeof(RecurringMode), createEventDTO.RepeatMode),
+                        EndDate = (DateTime)createEventDTO.RepeatEndDate!
+                    }
+                };
+                user.Events.Add(newEvent);
+                context.SaveChanges();
+                return CreatedAtAction(nameof(CreateEvent), new { id = newEvent.EventId });
+            };
         }
     }
 }
