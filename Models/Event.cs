@@ -15,8 +15,6 @@ namespace IntentAPI.Models
 
         public DateTime EndTime { get; set; }
 
-        public bool IsRecurring { get; set; }
-
         public int UserId { get; set; }
 
         [Required]
