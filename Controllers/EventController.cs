@@ -4,6 +4,7 @@ using IntentAPI.Models;
 using IntentAPI.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
 
 namespace IntentAPI.Controllers
@@ -102,6 +103,32 @@ namespace IntentAPI.Controllers
 
                 return Ok(events);
             };
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult DeleteEvent([FromQuery] DeleteEventDTO deleteEventDTO)
+        {
+            DeleteEventValidator validator = new DeleteEventValidator();
+            ValidationResult result = validator.Validate(deleteEventDTO);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Message = result.Errors[0].ErrorMessage
+                });
+            }
+
+            using (var context = new AppDbContext())
+            {
+                int Id = int.Parse(deleteEventDTO.Id);
+                context.Events.Where(e=> e.EventId == Id).ExecuteDelete();
+                return NoContent();
+            }
         }
     }
 }
