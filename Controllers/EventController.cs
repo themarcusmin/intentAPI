@@ -54,5 +54,54 @@ namespace IntentAPI.Controllers
                 return CreatedAtAction(nameof(CreateEvent), new { id = newEvent.EventId });
             };
         }
+
+        [HttpGet]
+        [Authorize]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetEvents([FromQuery] GetEventDTO getEventDTO)
+        {
+            GetEventValidator validator = new GetEventValidator();
+            ValidationResult result = validator.Validate(getEventDTO);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Message = result.Errors[0].ErrorMessage
+                });
+            }
+
+            var firebaseUserid = HttpContext.Items["FirebaseUserId"];
+            using (var context = new AppDbContext())
+            {
+                var events = context.Events
+                    .Where(e => e.StartTime >= getEventDTO.EventStartTime
+                                && e.EndTime <= getEventDTO.EventEndTime
+                                && e.FirebaseUserId == firebaseUserid)
+                    .GroupJoin(context.Recurrings, e => e.EventId, r => r.EventId,
+                                (e, r) => new
+                                {
+                                    Event = e,
+                                })
+                    .Select(x => new
+                    {
+                        x.Event.EventId,
+                        x.Event.Title,
+                        x.Event.Description,
+                        x.Event.Location,
+                        x.Event.StartTime,
+                        x.Event.EndTime,
+                        RecurringMode = x.Event.Recurring == null
+                                    ? null
+                                    : x.Event.Recurring.RecurringMode.ToString(),
+                        RecurringEndDate = (DateTime?)x.Event.Recurring.EndDate
+                    })
+                    .ToList();
+
+                return Ok(events);
+            };
+        }
     }
 }
