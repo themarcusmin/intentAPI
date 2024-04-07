@@ -78,9 +78,15 @@ namespace IntentAPI.Controllers
             using (var context = new AppDbContext())
             {
                 var events = context.Events
-                    .Where(e => e.StartTime >= getEventDTO.EventStartTime
-                                && e.EndTime <= getEventDTO.EventEndTime
-                                && e.FirebaseUserId == firebaseUserid)
+                    .Where(e =>
+                                e.FirebaseUserId == firebaseUserid &&
+                                (
+                                    (e.StartTime >= getEventDTO.EventStartTime &&
+                                    e.EndTime <= getEventDTO.EventEndTime)
+                                    ||
+                                    (e.Recurring.EndDate >= getEventDTO.EventStartTime &&
+                                    e.Recurring.EndDate <= getEventDTO.EventEndTime)
+                                ))
                     .GroupJoin(context.Recurrings, e => e.EventId, r => r.EventId,
                                 (e, r) => new
                                 {
