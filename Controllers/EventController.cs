@@ -44,7 +44,7 @@ namespace IntentAPI.Controllers
                     Location = createEventDTO.Location,
                     StartTime = createEventDTO.EventStartTime,
                     EndTime = createEventDTO.EventEndTime,
-                    Recurring = createEventDTO.RepeatMode == RecurringMode.never.ToString() ? null : new Recurring
+                    Recurring = createEventDTO.RepeatMode == RecurringMode.NEVER.ToString() ? null : new Recurring
                     {
                         RecurringMode = (RecurringMode)Enum.Parse(typeof(RecurringMode), createEventDTO.RepeatMode),
                         EndDate = (DateTime)createEventDTO.RepeatEndDate!

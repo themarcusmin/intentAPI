@@ -4,11 +4,11 @@ namespace IntentAPI.Models
 {
     public enum RecurringMode
     {
-        never,
-        daily,
-        weekly,
-        monthly,
-        yearly
+        NEVER,
+        DAILY,
+        WEEKLY,
+        MONTHLY,
+        YEARLY
     }
     public class Recurring
     {
