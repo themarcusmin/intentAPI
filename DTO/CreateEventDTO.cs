@@ -1,6 +1,4 @@
-﻿using IntentAPI.Models;
-
-namespace IntentAPI.DTO
+﻿namespace IntentAPI.DTO
 {
     public class CreateEventDTO
     {
