@@ -15,13 +15,13 @@ services:
       dockerfile: Dockerfile
     container_name: server
     ports:
-      - 8080:8080
+      - 8080:80
     links:
       - postgres
     entrypoint: ["dotnet", "IntentAPI.dll"]
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_URLS=http://+:80/;https://*:443/
       - GOOGLE_APPLICATION_CREDENTIALS=service-account-file.json
     #      - ASPNETCORE_URLS=https://+:8081;http://+:8080
     #      - ASPNETCORE_HTTPS_PORT=8081
