@@ -78,9 +78,10 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
-var certPem = File.ReadAllText("/etc/pki/tls/certs/tealpromethium/domain.cert.pem");
-var keyPem = File.ReadAllText("/etc/pki/tls/certs/tealpromethium/private.key.pem");
+var certPem = File.ReadAllText("certs/domain.cert.pem");
+var keyPem = File.ReadAllText("certs/private.key.pem");
 var x509 = X509Certificate2.CreateFromPem(certPem, keyPem);
+
 builder.WebHost.ConfigureKestrel((context) =>
 {
     context.ListenAnyIP(443, options =>

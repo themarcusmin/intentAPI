@@ -45,4 +45,12 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="certs\private.key.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="certs\domain.cert.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

@@ -16,6 +16,7 @@ services:
     container_name: server
     ports:
       - 8080:80
+      - 8081:443
     links:
       - postgres
     entrypoint: ["dotnet", "IntentAPI.dll"]
