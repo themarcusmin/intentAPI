@@ -8,6 +8,7 @@ using IntentAPI.Abstractions;
 using Microsoft.IdentityModel.Logging;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.Security.Cryptography.X509Certificates;
 
 DotNetEnv.Env.Load();
 
@@ -75,6 +76,17 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
+var certPem = File.ReadAllText("/etc/pki/tls/certs/tealpromethium/domain.cert.pem");
+var keyPem = File.ReadAllText("/etc/pki/tls/certs/tealpromethium/private.key.pem");
+var x509 = X509Certificate2.CreateFromPem(certPem, keyPem);
+builder.WebHost.ConfigureKestrel((context) =>
+{
+    context.ListenAnyIP(443, options =>
+    {
+        options.UseHttps(x509);
+    });
 });
 
 var app = builder.Build();
