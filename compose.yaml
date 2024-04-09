@@ -20,11 +20,12 @@ services:
       - postgres
     entrypoint: ["dotnet", "IntentAPI.dll"]
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80/;https://*:443/
+      - ASPNETCORE_ENVIRONMENT=Development # Production
+      - ASPNETCORE_HTTP_PORTS=80;8080;
+      - ASPNETCORE_HTTPS_PORTS=443;8081;
       - GOOGLE_APPLICATION_CREDENTIALS=service-account-file.json
-    #      - ASPNETCORE_URLS=https://+:8081;http://+:8080
-    #      - ASPNETCORE_HTTPS_PORT=8081
+    # - ASPNETCORE_URLS=http://+:80/;https://*:443/
+    # - ASPNETCORE_URLS=https://+:8081;http://+:8080
     volumes:
       - .:/code
     env_file:

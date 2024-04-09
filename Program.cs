@@ -7,6 +7,7 @@ using FirebaseAdmin.Auth;
 using IntentAPI.Abstractions;
 using Microsoft.IdentityModel.Logging;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.HttpOverrides;
 
 DotNetEnv.Env.Load();
 
@@ -70,7 +71,15 @@ builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -78,13 +87,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     IdentityModelEventSource.ShowPII = true;
+    app.UseHttpsRedirection();
 }
 
 app.UseCors();
 
 app.UseExceptionHandler(_ => { });
-
-app.UseHttpsRedirection();
 
 app.UseMiddleware<JwtMiddleware>();
 
